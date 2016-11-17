@@ -66,8 +66,8 @@
     self.layer.cornerRadius = 3.f;
     self.clipsToBounds = YES;
     
-    _minValue = 1;
-    _maxValue = NSIntegerMax;
+    _minValue = @1;
+    _maxValue = @(NSIntegerMax);
     _inputFieldFont = 15;
     _buttonTitleFont = 17;
     
@@ -83,7 +83,7 @@
     _textField.textAlignment = NSTextAlignmentCenter;
     _textField.keyboardType = UIKeyboardTypeNumberPad;
     _textField.font = [UIFont systemFontOfSize:_inputFieldFont];
-    _textField.text = [NSString stringWithFormat:@"%ld",_minValue];
+    _textField.text = [NSString stringWithFormat:@"%@",_minValue];
     
     [self addSubview:_textField];
 }
@@ -113,7 +113,7 @@
     if (_decreaseHide)
     {
         _textField.hidden = YES;
-        _textField.text = [NSString stringWithFormat:@"%ld",_minValue-1];
+        _textField.text = [NSString stringWithFormat:@"%.2f",_minValue.floatValue-self.preciseValue.floatValue];
         _decreaseBtn.alpha = 0;
         _decreaseBtn.frame = CGRectMake(_width-_height, 0, _height, _height);
         self.backgroundColor = [UIColor clearColor];
@@ -127,11 +127,11 @@
 #pragma mark - UITextFieldDelegate
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    NSString *minValueString = [NSString stringWithFormat:@"%ld",_minValue];
-    NSString *maxValueString = [NSString stringWithFormat:@"%ld",_maxValue];
+    NSString *minValueString = [NSString stringWithFormat:@"%.2f",_minValue.floatValue];
+    NSString *maxValueString = [NSString stringWithFormat:@"%.2f",_maxValue.floatValue];
     
-    [textField.text isNotBlank] == NO || textField.text.integerValue < _minValue ? _textField.text = minValueString : nil;
-    textField.text.integerValue > _maxValue ? _textField.text = maxValueString : nil;
+    [textField.text isNotBlank] == NO || textField.text.floatValue < _minValue.floatValue ? _textField.text = minValueString : nil;
+    textField.text.floatValue > _maxValue.floatValue ? _textField.text = maxValueString : nil;
     _numberBlock ? _numberBlock(_textField.text) : nil;
     _delegate ? [_delegate pp_numberButton:self number:_textField.text] : nil;
 }
@@ -168,13 +168,13 @@
  */
 - (void)increase
 {
-    [_textField.text isNotBlank] == NO ? _textField.text = [NSString stringWithFormat:@"%ld",_minValue] : nil;
-    NSInteger number = [_textField.text integerValue] + 1;
+    [_textField.text isNotBlank] == NO ? _textField.text = [NSString stringWithFormat:@"%.2f",_minValue.floatValue] : nil;
+    CGFloat number = [_textField.text floatValue] + self.preciseValue.floatValue;
     
-    if (number <= _maxValue)
+    if (number <= _maxValue.floatValue)
     {
         // 当按钮为"减号按钮隐藏模式",且输入框值==设定最小值,减号按钮展开
-        if (_decreaseHide && number == _minValue)
+        if (_decreaseHide && number == _minValue.floatValue)
         {
             [self rotationAnimationMethod];
             [UIView animateWithDuration:0.25 animations:^{
@@ -185,14 +185,14 @@
             }];
         }
         
-        _textField.text = [NSString stringWithFormat:@"%ld", number];
+        _textField.text = [NSString stringWithFormat:@"%.2f", number];
         _numberBlock ? _numberBlock(_textField.text) : nil;
         _delegate ? [_delegate pp_numberButton:self number:_textField.text] : nil;
     }
     else
     {
         if (_shakeAnimation) { [self shakeAnimationMethod]; }
-        PPLog(@"已超过最大数量%ld",_maxValue);
+        PPLog(@"已超过最大数量%.2f",_maxValue.floatValue);
     }
 }
 
@@ -201,10 +201,10 @@
  */
 - (void)decrease
 {
-    [_textField.text isNotBlank] == NO ? _textField.text = [NSString stringWithFormat:@"%ld",_minValue] : nil;
+    [_textField.text isNotBlank] == NO ? _textField.text = [NSString stringWithFormat:@"%.2f",_minValue.floatValue] : nil;
     NSInteger number = [_textField.text integerValue] - 1;
     
-    if (number >= _minValue)
+    if (number >= _minValue.floatValue)
     {
         _textField.text = [NSString stringWithFormat:@"%ld", number];
         _numberBlock ? _numberBlock(_textField.text) : nil;
@@ -213,19 +213,19 @@
     else
     {
         // 当按钮为"减号按钮隐藏模式",且输入框值 < 设定最小值,减号按钮隐藏
-        if (_decreaseHide && number < _minValue) {
+        if (_decreaseHide && number < _minValue.floatValue) {
             _textField.hidden = YES;
             [self rotationAnimationMethod];
             [UIView animateWithDuration:0.25 animations:^{
                 _decreaseBtn.alpha = 0;
                 _decreaseBtn.frame = CGRectMake(_width-_height, 0, _height, _height);
             } completion:^(BOOL finished) {
-                _textField.text = [NSString stringWithFormat:@"%ld",_minValue-1];
+                _textField.text = [NSString stringWithFormat:@"%.2f",_minValue.floatValue-self.preciseValue.floatValue];
             }];
             return;
         }
         if (_shakeAnimation) { [self shakeAnimationMethod]; }
-        PPLog(@"数量不能小于%ld",_minValue);
+        PPLog(@"数量不能小于%.2f",_minValue.floatValue);
     }
 }
 
@@ -242,10 +242,10 @@
 }
 
 #pragma mark - 加减按钮的属性设置
-- (void)setMinValue:(NSInteger)minValue
+- (void)setMinValue:(NSNumber*)minValue
 {
     _minValue = minValue;
-    _textField.text = [NSString stringWithFormat:@"%ld",minValue];
+    _textField.text = [NSString stringWithFormat:@"%.2f",minValue.floatValue];
 }
 
 - (void)setBorderColor:(UIColor *)borderColor

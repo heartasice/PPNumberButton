@@ -59,7 +59,7 @@ IB_DESIGNABLE
 @property (nonatomic, strong ) IBInspectable UIColor *borderColor;
 
 /** 输入框中的内容 */
-@property (nonatomic, copy   ) NSString *currentNumber;
+@property (nonatomic, copy   ) NSNumber *currentNumber;
 /** 输入框中的字体大小 */
 @property (nonatomic, assign ) IBInspectable CGFloat inputFieldFont;
 
@@ -75,9 +75,12 @@ IB_DESIGNABLE
 @property (nonatomic, copy   ) IBInspectable NSString *decreaseTitle;
 
 /** 最小值, default is 1 */
-@property (nonatomic, assign ) IBInspectable NSInteger minValue;
+@property (nonatomic, assign ) IBInspectable NSNumber *minValue;
 /** 最大值 */
-@property (nonatomic, assign ) NSInteger maxValue;
+@property (nonatomic, assign ) NSNumber *maxValue;
+
+@property (nonatomic, assign ) NSNumber *preciseValue;
+
 
 @end
 
